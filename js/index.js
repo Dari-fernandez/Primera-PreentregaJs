@@ -1,55 +1,103 @@
-alert("Ingrese la opcion del producto que desea llevar,para salir ingrese 0")
-let seleccionarProductos = Number(prompt("1-Burguer triple $3000 2-burguer doble $2000 3-burguer simple $1000 4-papas $500"))
-let seleccionarCantidad;
-let total = 0;
-
-const cantidad = (cant, precion) => {
-    return cant * precion
-}
-
-
-while (seleccionarProductos != 0) {
-    switch (seleccionarProductos) {
-        case 1:
-            seleccionarCantidad = Number(prompt("el producto seleccionado es Burguer triple, indique la cantidad"))
-            total += cantidad(seleccionarCantidad, 3000)
-            break;
-
-        case 2:
-            seleccionarCantidad = Number(prompt("el producto seleccionado es burguer doble, indique la cantidad"))
-            total += cantidad(seleccionarCantidad, 2000)
-            break;
-
-        case 3:
-            seleccionarCantidad = Number(prompt("el producto seleccionado es burguer simple, indique la cantidad"))
-            total += cantidad(seleccionarCantidad, 1000)
-            break;
-
-        case 4:
-            seleccionarCantidad = Number(prompt("el producto seleccionado es papas, indique la cantidad"))
-            total += cantidad(seleccionarCantidad, 500)
-            break;
-
-        default:
-            break;
-
+class Producto {
+    constructor(id, nombre, precio, cantidad) {
+        this.id = id
+        this.nombre = nombre
+        this.precio = precio
+        this.cantidad = cantidad
     }
-    seleccionarProductos = Number(prompt("1-Burguer triple $3000 2-burguer doble $2000 3-burguer simple $1000 4-papas $500"))
 
-}
+    aumentarCantidad(cantidad) {
+        this.cantidad = this.cantidad + cantidad
+    }
 
+    descripcion() {
+        return "id: " + this.id +
+            "\nnombre: " + this.nombre +
+            "\nprecio: " + this.precio
+    }
 
-alert("el total de la compra es de:" + total)
-
-const envio = () => {
-    if (total >= 10000) {
-        alert("El envio es gratuito")
-    } else {
-        total += 1000
-        alert("el costo de envio es de 1000, el total es: " + total)
+    descripcionDeCompra() {
+        return "nombre: " + this.nombre +
+            "\nprecio: " + this.precio +
+            "\ncantidad: " + this.cantidad
     }
 }
 
-envio()
+class ControladorProductos {
+    constructor() {
+        this.listaProductos = []
+    }
 
-alert("Gracias por la compra! Hasta pronto ")
+    agregar(producto) {
+        this.listaProductos.push(producto)
+    }
+
+    buscarProductoPorID(id) {
+        return this.listaProductos.find(producto => producto.id == id)
+    }
+
+    mostrarProductos() {
+        let listaEnTexto = ""
+        this.listaProductos.forEach(producto => {
+            listaEnTexto = listaEnTexto + producto.descripcion() + "\n---------------------\n"
+        })
+        alert(listaEnTexto)
+    }
+}
+
+class Carrito {
+    constructor() {
+        this.listaCarrito = []
+    }
+
+    agregar(producto, cantidad) {
+        let existe = this.listaCarrito.some(el => el.id == producto.id)
+        if (existe) {
+            producto.aumentarCantidad(cantidad)
+        } else {
+            producto.aumentarCantidad(cantidad)
+            this.listaCarrito.push(producto)
+        }
+    }
+
+    mostrarProductos() {
+        let listaEnTexto = "Carrito de compras:\n"
+        this.listaCarrito.forEach(producto => {
+            listaEnTexto = listaEnTexto + producto.descripcionDeCompra() + "\n--------------\n"
+            //console.log(producto.descripcionDeCompra())
+        })
+        alert(listaEnTexto)
+    }
+
+    calcularTotal() {
+        return this.listaCarrito.reduce((acumulador, producto) => acumulador + producto.precio * producto.cantidad, 0)
+    }
+
+    calcularIVA() {
+        return this.calcularTotal() * 1.21
+    }
+}
+
+const Controlador = new ControladorProductos()
+const CARRITO = new Carrito()
+
+Controlador.agregar(new Producto(1, "Burguer triple", 4000, 0))
+Controlador.agregar(new Producto(2, "Burguer doble", 3000, 0))
+Controlador.agregar(new Producto(3, "Burguer simple", 2000, 0))
+Controlador.agregar(new Producto(4, "papas", 1500, 0))
+
+let rta
+
+do {
+    Controlador.mostrarProductos()
+    let opcion = Number(prompt("Ingrese el id del producto que desea agregar"))
+    let producto = Controlador.buscarProductoPorID(opcion)
+    let cantidad = Number(prompt("Ingrese cuantas unidades quiere del producto"))
+    CARRITO.agregar(producto, cantidad)
+    alert("El producto fué añadido al carrito: ")
+    CARRITO.mostrarProductos()
+
+    rta = prompt("Ingrese 'ESC' para salir").toUpperCase()
+} while (rta != "ESC")
+
+alert("El total de su compra con IVA incluido es de: " + CARRITO.calcularIVA())
