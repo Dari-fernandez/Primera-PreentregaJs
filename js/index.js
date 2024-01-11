@@ -1,103 +1,106 @@
-class Producto {
-    constructor(id, nombre, precio, cantidad) {
-        this.id = id
-        this.nombre = nombre
-        this.precio = precio
-        this.cantidad = cantidad
+document.addEventListener('DOMContentLoaded', function () {
+    const productos = [
+        { nombre: 'Hamburguesa simple', precio: 2000 },
+        { nombre: 'Hamburguesa doble', precio: 3000 },
+        { nombre: 'Hamburguesa triple', precio: 4000 },
+        { nombre: 'Papas con cheddar y panceta', precio: 1500 }
+    ];
+    let carrito = [];
+    const mp = new MercadoPago('APP_USR-f019de0e-1303-4307-adec-da50e6bdebe5');
+    const bricksBuilder = mp.bricks();
+    locale: 'es-AR'
+
+    mp.bricks().create("wallet", "wallet_container", {
+        initialization: {
+            preferenceId: "<PREFERENCE_ID>",
+        },
+    });
+
+    // Función para actualizar la visualización del carrito
+    function actualizarCarrito() {
+        const carritoContainer = document.getElementById('carrito');
+        carritoContainer.innerHTML = ''; // Limpiar el carrito antes de actualizarlo
+
+        carrito.forEach(function (item, index) {
+            const div = document.createElement('div');
+            div.classList.add('carrito-item');
+            div.innerHTML = `
+                <span>${item.nombre} - $${item.precio}</span>
+                <button class="quitar-item" data-index="${index}">Quitar</button>
+            `;
+            carritoContainer.appendChild(div);
+        });
+
+        // Actualizar el total
+        const totalCarrito = document.getElementById('total-carrito');
+        const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+        totalCarrito.textContent = `Total: $${total}`;
+
+        // Guardar el carrito en localStorage
+        localStorage.setItem('carrito', JSON.stringify(carrito));
     }
 
-    aumentarCantidad(cantidad) {
-        this.cantidad = this.cantidad + cantidad
+    // Función para agregar un producto al carrito
+    function agregarAlCarrito(producto) {
+        carrito.push(producto);
+        actualizarCarrito();
     }
 
-    descripcion() {
-        return "id: " + this.id +
-            "\nnombre: " + this.nombre +
-            "\nprecio: " + this.precio
+    // Función para quitar un producto del carrito
+    function quitarDelCarrito(index) {
+        carrito.splice(index, 1);
+        actualizarCarrito();
+        Swal.fire("¿Está de acuerdo con quitar el artículo del carrito?");
     }
 
-    descripcionDeCompra() {
-        return "nombre: " + this.nombre +
-            "\nprecio: " + this.precio +
-            "\ncantidad: " + this.cantidad
-    }
-}
+    // Función para iniciar el proceso de pago con Mercado Pago
+    function iniciarPago() {
+        // Crear una preferencia de pago
+        const preference = {
+            items: carrito.map(item => ({
+                title: item.nombre,
+                unit_price: item.precio,
+                quantity: 1
+            }))
+        };
 
-class ControladorProductos {
-    constructor() {
-        this.listaProductos = []
-    }
+        // Configuración del checkout
+        const checkoutConfig = {
+            preference: preference,
+            autoOpen: true, // Abrir automáticamente el modal cuando esté listo
+            render: {
+                container: '.carrito-container', // Selector del contenedor donde se mostrará el botón de pago
+                label: 'Pagar', // Etiqueta del botón de pago
+            }
+        };
 
-    agregar(producto) {
-        this.listaProductos.push(producto)
-    }
-
-    buscarProductoPorID(id) {
-        return this.listaProductos.find(producto => producto.id == id)
-    }
-
-    mostrarProductos() {
-        let listaEnTexto = ""
-        this.listaProductos.forEach(producto => {
-            listaEnTexto = listaEnTexto + producto.descripcion() + "\n---------------------\n"
-        })
-        alert(listaEnTexto)
-    }
-}
-
-class Carrito {
-    constructor() {
-        this.listaCarrito = []
+        // Abrir el checkout de Mercado Pago
+        mp.checkout(checkoutConfig);
     }
 
-    agregar(producto, cantidad) {
-        let existe = this.listaCarrito.some(el => el.id == producto.id)
-        if (existe) {
-            producto.aumentarCantidad(cantidad)
-        } else {
-            producto.aumentarCantidad(cantidad)
-            this.listaCarrito.push(producto)
+    // Seleccionar los botones "Comprar" por su ID y agregar eventos de clic a cada uno
+    const botonesComprar = document.querySelectorAll('.cont-button input[type="button"]');
+    botonesComprar.forEach(function (boton, index) {
+        boton.addEventListener('click', function () {
+            // Agregar el producto al carrito
+            const producto = productos[index];
+            agregarAlCarrito(producto);
+        });
+    });
+
+
+    // Seleccionar los botones "Quitar" en el carrito y agregar eventos de clic a cada uno
+    document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('quitar-item')) {
+            const index = parseInt(event.target.getAttribute('data-index'));
+            quitarDelCarrito(index);
         }
+    });
+
+    // Verificar si hay un carrito almacenado en localStorage al cargar la página
+    const carritoAlmacenado = localStorage.getItem('carrito');
+    if (carritoAlmacenado) {
+        carrito = JSON.parse(carritoAlmacenado);
+        actualizarCarrito();
     }
-
-    mostrarProductos() {
-        let listaEnTexto = "Carrito de compras:\n"
-        this.listaCarrito.forEach(producto => {
-            listaEnTexto = listaEnTexto + producto.descripcionDeCompra() + "\n--------------\n"
-            //console.log(producto.descripcionDeCompra())
-        })
-        alert(listaEnTexto)
-    }
-
-    calcularTotal() {
-        return this.listaCarrito.reduce((acumulador, producto) => acumulador + producto.precio * producto.cantidad, 0)
-    }
-
-    calcularIVA() {
-        return this.calcularTotal() * 1.21
-    }
-}
-
-const Controlador = new ControladorProductos()
-const CARRITO = new Carrito()
-
-Controlador.agregar(new Producto(1, "Burguer triple", 4000, 0))
-Controlador.agregar(new Producto(2, "Burguer doble", 3000, 0))
-Controlador.agregar(new Producto(3, "Burguer simple", 2000, 0))
-Controlador.agregar(new Producto(4, "papas", 1500, 0))
-
-let rta
-
-do {
-    Controlador.mostrarProductos()
-    let opcion = Number(prompt("Ingrese el id del producto que desea agregar"))
-    let producto = Controlador.buscarProductoPorID(opcion)
-    let cantidad = Number(prompt("Ingrese cuantas unidades quiere del producto"))
-    CARRITO.agregar(producto, cantidad)
-    alert("El producto fué añadido al carrito: ")
-    CARRITO.mostrarProductos()
-
-    rta = prompt("Ingrese 'ESC' para salir").toUpperCase()
-} while (rta != "ESC")
-
-alert("El total de su compra con IVA incluido es de: " + CARRITO.calcularIVA())
+});

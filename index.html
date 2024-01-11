@@ -1,13 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rato Express</title>
-  </head>
-  <body>
-    <h1>clase 0</h1>
 
-    <script src="./js/index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rato Express | Inicio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+  <!--css main-->
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- script del SDK de Mercado Pago en el head de tu HTML -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+  <!--libreria-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!--javascript-->
+  <script src="../proyecto-js/js/index.js"></script>
+
+</head>
+
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li class="logo">
+          <div>
+            <img class="logo" src="./img/logo-rato2.png" alt="Rato Express">
+          </div>
+        </li>
+        <li><a href="./index.html">Inicio</a></li>
+        <li><a href="./tienda.html">Tienda</a></li>
+        <li><a href="./formas-de-pago.html">Formas de Pago</a></li>
+        <li><a href="./ubicacion.html">Ubicación</a></li>
+        <li><a href="./contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <article class="articulos">
+        <div class="ar">
+          <img class="productos" src="./img/burguer-simple.jpg" alt="">
+          <h3> Hamburguesa simple. </h3>
+          <p>$2000</p>
+          <div class="cont-button">
+            <input type="button" value="Comprar">
+          </div>
+        </div>
+
+        <div class="ar">
+          <img class="productos" src="./img/burguer-doble.jpg" alt="">
+          <h3> Hamburguesa doble. </h3>
+          <p>$3000</p>
+          <div class="cont-button">
+            <input type="button" value="Comprar">
+          </div>
+        </div>
+        <div class="ar">
+          <img class="productos" src="./img/burguer-trile.webp" alt="">
+          <h3> Hamburguesa triple. </h3>
+          <p>$4000</p>
+          <div class="cont-button">
+            <input type="button" value="Comprar">
+          </div>
+        </div>
+
+
+        <div class="ar">
+          <img class="productos" src="./img/papas-cheddar.jpg" alt="">
+          <h3> Papas con cheddar y panceta.</h3>
+          <p>$1500</p>
+          <div class="cont-button">
+            <input type="button" value="Comprar">
+          </div>
+        </div>
+      </article>
+
+    </section>
+    <div class="carrito-container">
+      <h2>Carrito de Compras</h2>
+      <div id="carrito"></div>
+      <div id="total-carrito">Total: $0</div>
+    </div>
+
+    <div id="wallet_container"></div>
+
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="f1">
+        <img class="if" src="./img/Facebook.png" alt="facebook">
+      </div>
+      <div class="f2">
+        <img class="if" src="./img/instagram (2).png" alt="instagram">
+      </div>
+      <div class="f3">
+        <img class="if" src="./img/whatsapp.png" alt="whatsapp">
+      </div>
+      <div class="f4">
+        <img class="if" src="./img/envios-removebg-preview.png" alt="envios">
+        <p class="tf3">Envios a todo Rosario</p>
+      </div>
+      <div class="f5">
+        <img class="ifd" src="./img/derechosre.png" alt="derechos">
+        <p class="tf2">Todos los derechos reservados. La información de productos y precios es propiedad de Rato Express. </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
 </html>
